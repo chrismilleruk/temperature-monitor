@@ -56,23 +56,17 @@ services:
       retries: 3
       start_period: 40s
 
-  hubitat-agent:
+  ha-mqtt:
     build:
       context: .
-      dockerfile: hubitat_agent/Dockerfile
+      dockerfile: ha_mqtt/Dockerfile
     depends_on:
       - timescaledb
     environment:
-      # Provide either HUBITAT_API_URL directly or set HUBITAT_HOST and HUBITAT_TOKEN
-      HUBITAT_API_URL: ""
-      HUBITAT_HOST: ""
-      HUBITAT_TOKEN: ""
-      # Postgres URL used by the agent to write time-series data
-      TIMESCALEDB_URL: postgresql://sensor_user:sensor_password@timescaledb:5432/sensor_data
-      # POLL_INTERVAL_SECONDS is used when running in poll mode (default 30)
-      POLL_INTERVAL_SECONDS: 30
-      # MODE can be 'poll' or 'server' to accept Hubitat POST events
-      MODE: poll
+      DATABASE_URL: postgresql://sensor_user:sensor_password@timescaledb:5432/sensor_data
+      PUBLISH_INTERVAL: 30
+      # Set as balena service variables (not here): MQTT_HOST, MQTT_PORT,
+      # MQTT_USER, MQTT_PASS. Optional: SENSOR_NAMES (JSON id -> name).
     restart: unless-stopped
 
 volumes:
