@@ -56,6 +56,28 @@ services:
       retries: 3
       start_period: 40s
 
+  # hubitat-agent: restored as in the fleet's release rev9 (POLL_INTERVAL_SECONDS: 60
+  # per the rev9 composition; main has 30). HUBITAT_TOKEN et al are set via balena
+  # service variables, never in this file.
+  hubitat-agent:
+    build:
+      context: .
+      dockerfile: hubitat_agent/Dockerfile
+    depends_on:
+      - timescaledb
+    environment:
+      # Provide either HUBITAT_API_URL directly or set HUBITAT_HOST and HUBITAT_TOKEN
+      HUBITAT_API_URL: ""
+      HUBITAT_HOST: ""
+      HUBITAT_TOKEN: ""
+      # Postgres URL used by the agent to write time-series data
+      TIMESCALEDB_URL: postgresql://sensor_user:sensor_password@timescaledb:5432/sensor_data
+      # POLL_INTERVAL_SECONDS is used when running in poll mode (default 30)
+      POLL_INTERVAL_SECONDS: 60
+      # MODE can be 'poll' or 'server' to accept Hubitat POST events
+      MODE: poll
+    restart: unless-stopped
+
   ha-mqtt:
     build:
       context: .
