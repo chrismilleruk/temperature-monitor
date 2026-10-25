@@ -65,7 +65,7 @@ def publish_discovery(client, names):
         config = {
             "name": name,
             "unique_id": uid,
-            "object_id": uid,
+            "default_entity_id": f"sensor.{uid}",
             "state_topic": f"{BASE_TOPIC}/sensor/{sid}",
             "availability_topic": STATUS_TOPIC,
             "device_class": "temperature",
